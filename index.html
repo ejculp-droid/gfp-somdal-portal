@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GFP Somdal LLC — Client Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/css/portal.css" />
+</head>
+<body>
+
+<style>
+  :root {
+    --rto-paper: #f5f1ea;
+    --rto-surface: #fffdfa;
+    --rto-brand: #0f4a4b;
+    --rto-brand-strong: #0a3c3d;
+    --rto-ink: #1f1d1a;
+    --rto-ink-soft: #3e3a35;
+    --rto-muted: #7a746c;
+    --rto-line: rgba(31, 29, 26, 0.12);
+    --rto-shadow: 0 10px 28px rgba(31, 29, 26, 0.08);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--rto-paper);
+    color: var(--rto-ink);
+    font-family: "Inter", "Segoe UI", sans-serif;
+  }
+
+  .container {
+    max-width: 1140px;
+    margin: 0 auto;
+    padding: 0 24px;
+    width: 100%;
+  }
+
+  .gfp-portal {
+    background: var(--rto-paper);
+    color: var(--rto-ink);
+    font-family: "Inter", "Segoe UI", sans-serif;
+  }
+
+  .gfp-portal h1,
+  .gfp-portal h2,
+  .gfp-portal h3 {
+    font-family: "Cormorant Garamond", Georgia, serif;
+    letter-spacing: -0.02em;
+    color: var(--rto-brand);
+    margin-top: 0;
+  }
+
+  .gfp-portal p {
+    color: var(--rto-ink-soft);
+    line-height: 1.7;
+  }
+
+  .gfp-portal .button1 {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 46px;
+    padding: 0.7rem 1.15rem;
+    border-radius: 12px;
+    border: 1px solid var(--rto-brand);
+    background: var(--rto-brand);
+    color: #fff;
+    font-size: 0.95rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background 180ms ease, transform 180ms ease, box-shadow 180ms ease;
+    box-shadow: none;
+  }
+
+  .gfp-portal .button1:hover {
+    background: var(--rto-brand-strong);
+    transform: translateY(-1px);
+    box-shadow: 0 8px 20px rgba(15, 74, 75, 0.24);
+    color: #fff;
+    text-decoration: none;
+  }
+
+  .gfp-portal .button-secondary {
+    background: transparent;
+    color: var(--rto-brand);
+  }
+
+  .gfp-portal .button-secondary:hover {
+    background: rgba(15, 74, 75, 0.08);
+    color: var(--rto-brand);
+    box-shadow: none;
+  }
+
+  .gfp-portal .hero-overlay {
+    background: linear-gradient(110deg, rgba(15, 74, 75, 0.78), rgba(15, 74, 75, 0.46));
+    border-radius: 22px;
+    padding: 3rem 2.2rem;
+    box-shadow: var(--rto-shadow);
+    backdrop-filter: blur(2px);
+  }
+
+  .gfp-portal .hero-overlay h1,
+  .gfp-portal .hero-overlay h4,
+  .gfp-portal .hero-overlay p {
+    color: #fff;
+  }
+
+  .gfp-portal .hero-overlay h1 {
+    font-size: clamp(2.2rem, 4.2vw, 4rem);
+    margin-bottom: 0.65rem;
+  }
+
+  .gfp-portal .hero-overlay h4 {
+    font-family: "Inter", "Segoe UI", sans-serif;
+    font-weight: 500;
+    margin-bottom: 0.85rem;
+  }
+
+  .gfp-portal .hero-overlay p {
+    max-width: 72ch;
+    margin: 0 auto;
+    opacity: 0.95;
+  }
+
+  .gfp-portal .section-shell {
+    background: var(--rto-surface);
+    border: 1px solid var(--rto-line);
+    border-radius: 20px;
+    padding: 1.5rem;
+    box-shadow: var(--rto-shadow);
+  }
+
+  .gfp-portal .phase-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+    margin-top: 1.15rem;
+  }
+
+  .gfp-portal .phase-card {
+    background: #fff;
+    border: 1px solid var(--rto-line);
+    border-radius: 16px;
+    padding: 1.1rem;
+    transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+  }
+
+  .gfp-portal .phase-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 22px rgba(31, 29, 26, 0.09);
+    border-color: rgba(15, 74, 75, 0.25);
+  }
+
+  .gfp-portal .phase-card h3 {
+    font-size: 1.5rem;
+    margin-bottom: 0.45rem;
+  }
+
+  .gfp-portal .eyebrow {
+    display: inline-block;
+    margin-bottom: 0.85rem;
+    font-size: 0.78rem;
+    line-height: 1;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    font-weight: 600;
+    color: var(--rto-muted);
+  }
+
+  .gfp-portal .vdr-band {
+    background: linear-gradient(100deg, #e9efe9, #f3efe8);
+  }
+
+  .gfp-portal .vdr-band h2 {
+    margin-bottom: 0.4rem;
+  }
+
+  .row.sectionBlockLayout {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .col-md-12.columnBlockLayout {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+
+  @media (max-width: 991px) {
+    .gfp-portal .phase-grid {
+      grid-template-columns: 1fr;
+    }
+    .gfp-portal .hero-overlay {
+      padding: 2.1rem 1.2rem;
+    }
+  }
+</style>
+
+<div class="gfp-portal">
+
+  <!-- HERO -->
+  <div class="row sectionBlockLayout" style="display:flex;flex-wrap:wrap;min-height:62vh;background-image:url('assets/images/hero-bg.jpg');background-position:center center;background-repeat:no-repeat;background-size:cover;padding:40px 0;">
+    <div class="container">
+      <div class="col-md-12 columnBlockLayout" style="flex-grow:1;display:flex;flex-direction:column;justify-content:center;margin:70px 0;text-align:center;">
+        <div class="hero-overlay">
+          <span class="eyebrow" style="color:#d9ece7;">GFP Somdal LLC Portal</span>
+          <h1>Welcome to Phase 3</h1>
+          <h4>Secure access to deliverables, phase pages, and your VDR</h4>
+          <p>
+            This portal is your central workspace for all GFP Somdal LLC integration materials.
+            Start with phase pages below or jump directly into the Virtual Data Room.
+          </p>
+          <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:20px;">
+            <a class="button1" href="#phase-links">View Phase Pages</a>
+            <a class="button1 button-secondary" href="https://example.com/vdr-placeholder" target="_blank" rel="noopener">Open VDR</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PHASE PAGES -->
+  <div id="phase-links" class="row sectionBlockLayout" style="display:flex;flex-wrap:wrap;min-height:auto;padding:44px 0;">
+    <div class="container">
+      <div class="col-md-12 columnBlockLayout" style="flex-grow:1;display:flex;flex-direction:column;">
+        <div class="section-shell">
+          <span class="eyebrow">Deliverables</span>
+          <h2 style="font-size:clamp(2rem,3.2vw,3rem);margin-bottom:0.45rem;">Phase Pages</h2>
+          <p style="max-width:72ch;margin-bottom:0;">
+            Use these links to navigate each phase workspace. Replace placeholder URLs once your pages are published.
+          </p>
+
+          <div class="phase-grid">
+            <div class="phase-card">
+              <h3>Phase 1</h3>
+              <p>Initial assessments, discovery outputs, and baseline documentation.</p>
+              <a class="button1 button-secondary" href="pages/phase-1.html" style="margin-top:8px;">Open Phase 1</a>
+            </div>
+
+            <div class="phase-card">
+              <h3>Phase 2</h3>
+              <p>Analysis workstreams, draft recommendations, and collaboration artifacts.</p>
+              <a class="button1 button-secondary" href="pages/phase-2.html" style="margin-top:8px;">Open Phase 2</a>
+            </div>
+
+            <div class="phase-card">
+              <h3>Phase 3</h3>
+              <p>Final visuals, information flow assets, and role analysis materials.</p>
+              <a class="button1 button-secondary" href="pages/phase-3.html" style="margin-top:8px;">Open Phase 3</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- VDR BAND -->
+  <div class="row sectionBlockLayout vdr-band" style="display:flex;flex-wrap:wrap;min-height:auto;padding:44px 0;">
+    <div class="container">
+      <div class="col-md-12 columnBlockLayout" style="flex-grow:1;display:flex;flex-direction:column;">
+        <div class="section-shell" style="display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:space-between;">
+          <div style="flex:1 1 420px;">
+            <span class="eyebrow">Secure Documents</span>
+            <h2 style="font-size:clamp(1.8rem,2.8vw,2.5rem);">Virtual Data Room</h2>
+            <p style="margin:0;">Access confidential files and diligence materials in your secure VDR environment.</p>
+          </div>
+          <div style="flex:0 0 auto;">
+            <a class="button1" href="https://example.com/vdr-placeholder" target="_blank" rel="noopener">Launch VDR</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>
