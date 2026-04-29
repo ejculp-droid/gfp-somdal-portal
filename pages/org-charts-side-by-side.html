@@ -244,13 +244,14 @@
   }
 
   .dept-button {
-    position: relative;
-    display: block;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    column-gap: 8px;
     min-width: 0;
     width: 100%;
     box-sizing: border-box;
-    padding: clamp(8px, 0.9vw, 14px) 20px;
-    text-align: center;
+    padding: clamp(8px, 0.9vw, 14px) clamp(10px, 1vw, 16px);
   }
 
   .dept-button .label {
@@ -258,7 +259,7 @@
     min-width: 0;
     text-align: center;
     text-wrap: pretty;
-    overflow-wrap: break-word;
+    overflow-wrap: anywhere;
     word-break: normal;
     white-space: normal;
     hyphens: auto;
@@ -268,10 +269,10 @@
   }
 
   .dept-button .plus {
-    position: absolute;
-    right: 6px;
-    top: 50%;
-    transform: translateY(-50%);
+    position: static;
+    justify-self: end;
+    align-self: center;
+    flex-shrink: 0;
     color: var(--teal-dark);
     font-size: 13px;
     line-height: 1;
@@ -346,17 +347,17 @@
   /* Row of nodes */
   .tier-row {
     display: grid;
-    grid-auto-flow: column;
-    grid-auto-columns: minmax(100px, 1fr);
     gap: clamp(6px, 0.8vw, 14px);
     align-items: flex-start;
     justify-items: stretch;
     width: 100%;
+    min-width: 0;
   }
 
-  /* Depts row */
-  .nodes-row,
-  .depts-row {
+  /* Deterministic column counts for principal and dept rows */
+  .nodes-row.tier-row,
+  .depts-row.tier-row {
+    grid-template-columns: repeat(var(--card-count, 1), minmax(0, 1fr));
     width: 100%;
   }
 
@@ -404,6 +405,23 @@
     body { background: white; }
     .charts-wrapper { grid-template-columns: 1fr 1fr; }
   }
+
+  /* ── PAN / ZOOM VIEWPORT ── */
+  :root {
+    --header-height: 140px;
+  }
+  .zoom-viewport {
+    width: 100%;
+    height: calc(100vh - var(--header-height));
+    overflow: hidden;
+    position: relative;
+    cursor: grab;
+  }
+  .zoom-viewport.is-panning { cursor: grabbing; }
+  .zoom-content {
+    transform-origin: 0 0;
+    will-change: transform;
+  }
 </style>
 </head>
 <body>
@@ -413,6 +431,8 @@
   <h1>GFP &amp; Somdal — Side by Side</h1>
 </header>
 
+<div class="zoom-viewport" id="zoom-viewport">
+<div class="zoom-content" id="zoom-content">
 <div class="charts-wrapper">
 
   <!-- ══════════════════════════════════
@@ -468,9 +488,7 @@
       </div>
 
       <!-- Dept cards row -->
-      <div class="depts-row tier-row">
-
-        <!-- Interior Design (CDO) -->
+      <div class="depts-row tier-row" style="--card-count: 3;">
         <div class="dept-branch">
           <div class="connector-v" style="height:20px;"></div>
           <div class="dept-card" data-group="gfp-id">
@@ -583,9 +601,7 @@
       </div>
 
       <!-- Dept cards row -->
-      <div class="depts-row tier-row">
-
-        <!-- Architecture Team -->
+      <div class="depts-row tier-row" style="--card-count: 4;">
         <div class="dept-branch">
           <div class="connector-v" style="height:20px;"></div>
           <div class="dept-card" data-group="som-arch">
@@ -640,6 +656,8 @@
   </div><!-- /chart-col Somdal -->
 
 </div><!-- /charts-wrapper -->
+</div><!-- /zoom-content -->
+</div><!-- /zoom-viewport -->
 
 <script>
   (function () {
@@ -714,6 +732,64 @@
     });
 
     cards.forEach(closeCard);
+  })();
+</script>
+<script>
+  // Pan / zoom
+  (function () {
+    var viewport = document.getElementById('zoom-viewport');
+    var content  = document.getElementById('zoom-content');
+    if (!viewport || !content) return;
+
+    var scale = 1, tx = 0, ty = 0;
+    var MIN = 0.5, MAX = 2.5;
+    var ZOOM_SENSITIVITY = 0.0015; // higher = faster zoom per scroll tick
+
+    function applyTransform() {
+      content.style.transform = 'translate(' + tx + 'px,' + ty + 'px) scale(' + scale + ')';
+    }
+    applyTransform();
+
+    // Wheel zoom — keep point under cursor fixed
+    viewport.addEventListener('wheel', function (e) {
+      e.preventDefault();
+      var rect = viewport.getBoundingClientRect();
+      var cx = e.clientX - rect.left;
+      var cy = e.clientY - rect.top;
+      var prevScale = scale;
+      var factor = Math.exp(-e.deltaY * ZOOM_SENSITIVITY);
+      scale = Math.min(MAX, Math.max(MIN, scale * factor));
+      if (scale === prevScale) return;
+      // Anchor the content point that was under the cursor
+      tx = cx - (cx - tx) * (scale / prevScale);
+      ty = cy - (cy - ty) * (scale / prevScale);
+      applyTransform();
+    }, { passive: false });
+
+    // Drag to pan
+    var isDragging = false, startX = 0, startY = 0, startTx = 0, startTy = 0;
+
+    viewport.addEventListener('mousedown', function (e) {
+      // Ignore clicks on interactive elements (buttons, dept cards)
+      if (e.target.closest('[role="button"]') || e.target.closest('.dept-card')) return;
+      isDragging = true;
+      viewport.classList.add('is-panning');
+      startX = e.clientX; startY = e.clientY;
+      startTx = tx;       startTy = ty;
+    });
+
+    window.addEventListener('mousemove', function (e) {
+      if (!isDragging) return;
+      tx = startTx + (e.clientX - startX);
+      ty = startTy + (e.clientY - startY);
+      applyTransform();
+    });
+
+    window.addEventListener('mouseup', function () {
+      if (!isDragging) return;
+      isDragging = false;
+      viewport.classList.remove('is-panning');
+    });
   })();
 </script>
 
