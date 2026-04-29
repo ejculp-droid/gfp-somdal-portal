@@ -787,6 +787,17 @@
       chartUrl.searchParams.set('page', pageName);
       embeddedChart.setAttribute('src', chartUrl.toString());
     }
+
+    (function scrubHomeBleed() {
+      function removeBleed() {
+        var leaked = document.querySelectorAll('.gfp-portal, .gfp-hero, .gfp-phases, .gfp-footer');
+        leaked.forEach(function (el) { el.remove(); });
+      }
+      removeBleed();
+      var observer = new MutationObserver(removeBleed);
+      observer.observe(document.documentElement, { childList: true, subtree: true });
+      setTimeout(function () { observer.disconnect(); }, 5000);
+    })();
   })();
   </script>
 </body>

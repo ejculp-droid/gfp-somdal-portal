@@ -7,7 +7,13 @@
   var xhr = new XMLHttpRequest();
   xhr.open('GET','https://raw.githubusercontent.com/ejculp-droid/gfp-somdal-portal/main/pages/'+p+'.html',false);
   xhr.send();
-  if (xhr.status === 200) { document.open(); document.write(xhr.responseText); document.close(); }
+  if (xhr.status === 200) {
+    document.open();
+    document.write(xhr.responseText);
+    document.close();
+    if (typeof window.stop === 'function') window.stop();
+    throw new Error('route-loaded');
+  }
 })();
 </script>
 <style>
