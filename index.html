@@ -2,7 +2,7 @@
 (function(){
   var p = new URLSearchParams(window.location.search).get('page');
   if (!p) return;
-  var allowed = ['phase-1','phase-2','phase-3','org-charts-side-by-side'];
+  var allowed = ['phase-1','phase-2','phase-3','phase-3b','org-charts-side-by-side'];
   if (allowed.indexOf(p) === -1) return;
   var xhr = new XMLHttpRequest();
   var bust = Date.now().toString();
