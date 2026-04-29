@@ -788,6 +788,22 @@
       embeddedChart.setAttribute('src', chartUrl.toString());
     }
 
+    function notifyParentHeight() {
+      var h = Math.max(
+        document.body ? document.body.scrollHeight : 0,
+        document.documentElement ? document.documentElement.scrollHeight : 0
+      );
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage({ type: 'gfp:iframe-height', page: 'phase-3', height: h }, '*');
+      }
+    }
+    notifyParentHeight();
+    window.addEventListener('load', notifyParentHeight);
+    window.addEventListener('resize', notifyParentHeight);
+    var heightObserver = new MutationObserver(notifyParentHeight);
+    heightObserver.observe(document.documentElement, { childList: true, subtree: true, attributes: true });
+    setTimeout(function () { heightObserver.disconnect(); }, 10000);
+
     (function scrubHomeBleed() {
       function removeBleed() {
         var leaked = document.querySelectorAll('.gfp-portal, .gfp-hero, .gfp-phases, .gfp-footer');
