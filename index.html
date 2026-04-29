@@ -1,4 +1,16 @@
-﻿<style>
+﻿<script>
+(function(){
+  var p = new URLSearchParams(window.location.search).get('page');
+  if (!p) return;
+  var allowed = ['phase-1','phase-2','phase-3'];
+  if (allowed.indexOf(p) === -1) return;
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET','https://raw.githubusercontent.com/ejculp-droid/gfp-somdal-portal/main/pages/'+p+'.html',false);
+  xhr.send();
+  if (xhr.status === 200) { document.open(); document.write(xhr.responseText); document.close(); }
+})();
+</script>
+<style>
   :root {
     --rto-brand: #0f4a4b;
     --rto-brand-light: #1a6e6f;
