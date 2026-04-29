@@ -45,7 +45,7 @@
     font-family: var(--font-body);
     color: var(--text-dark);
     min-height: 100vh;
-    overflow-x: auto;
+    overflow: hidden;
     -webkit-font-smoothing: antialiased;
   }
 
@@ -73,14 +73,29 @@
     line-height: 1.2;
   }
 
+  /* ── CHART ZOOM VIEWPORT ── */
+  .charts-zoom-viewport {
+    position: relative;
+    overflow: hidden;
+    min-height: calc(100vh - 140px);
+    cursor: grab;
+    user-select: none;
+  }
+  .charts-zoom-viewport.is-panning {
+    cursor: grabbing;
+  }
+  .charts-zoom-content {
+    transform-origin: 0 0;
+    will-change: transform;
+  }
+
   /* ── TWO-COLUMN LAYOUT ── */
   .charts-wrapper {
     display: grid;
     grid-template-columns: 3fr 4fr;
     gap: 0;
-    min-height: calc(100vh - 140px);
     width: 100%;
-    min-width: 560px; /* always side-by-side; body overflow-x:auto handles narrow viewports */
+    min-width: 560px;
     max-width: 1800px;
     margin: 0 auto;
   }
@@ -398,7 +413,9 @@
   <h1>GFP &amp; Somdal — Side by Side</h1>
 </header>
 
-<div class="charts-wrapper">
+<div class="charts-zoom-viewport" id="chartsZoomViewport">
+  <div class="charts-zoom-content" id="chartsZoomContent">
+  <div class="charts-wrapper">
 
   <!-- ══════════════════════════════════
        LEFT: GFP
@@ -621,6 +638,8 @@
   </div><!-- /chart-col Somdal -->
 
 </div><!-- /charts-wrapper -->
+  </div><!-- /charts-zoom-content -->
+</div><!-- /charts-zoom-viewport -->
 
 <script>
   (function () {
@@ -695,6 +714,112 @@
     });
 
     cards.forEach(closeCard);
+  })();
+</script>
+
+<script>
+  /* ── Chart zoom / pan ── */
+  (function () {
+    var viewport = document.getElementById('chartsZoomViewport');
+    var content  = document.getElementById('chartsZoomContent');
+    if (!viewport || !content) return;
+
+    var ZOOM_FACTOR    = 1.12;
+    var MIN_SCALE      = 0.2;
+    var MAX_SCALE      = 5;
+    var DRAG_THRESHOLD = 3;
+    var KEY_PAN_STEP   = 40;
+
+    var scale = 1, tx = 0, ty = 0;
+    var dragging = false, hasMoved = false;
+    var lastX = 0, lastY = 0;
+
+    function apply() {
+      content.style.transform =
+        'translate(' + tx + 'px,' + ty + 'px) scale(' + scale + ')';
+    }
+
+    function zoomAround(cx, cy, factor) {
+      var newScale = Math.max(MIN_SCALE, Math.min(MAX_SCALE, scale * factor));
+      tx = cx - (cx - tx) * (newScale / scale);
+      ty = cy - (cy - ty) * (newScale / scale);
+      scale = newScale;
+      apply();
+    }
+
+    /* Wheel zoom – centred on the cursor */
+    viewport.addEventListener('wheel', function (e) {
+      e.preventDefault();
+      var rect = viewport.getBoundingClientRect();
+      zoomAround(e.clientX - rect.left, e.clientY - rect.top,
+                 e.deltaY < 0 ? ZOOM_FACTOR : (1 / ZOOM_FACTOR));
+    }, { passive: false });
+
+    /* Drag to pan */
+    viewport.addEventListener('mousedown', function (e) {
+      if (e.button !== 0) return;
+      dragging  = true;
+      hasMoved  = false;
+      lastX     = e.clientX;
+      lastY     = e.clientY;
+    });
+
+    window.addEventListener('mousemove', function (e) {
+      if (!dragging) return;
+      var dx = e.clientX - lastX;
+      var dy = e.clientY - lastY;
+      if (!hasMoved && (Math.abs(dx) > DRAG_THRESHOLD || Math.abs(dy) > DRAG_THRESHOLD)) {
+        hasMoved = true;
+      }
+      if (hasMoved) {
+        tx += dx; ty += dy;
+        lastX = e.clientX; lastY = e.clientY;
+        viewport.classList.add('is-panning');
+        apply();
+      }
+    });
+
+    window.addEventListener('mouseup', function () {
+      if (dragging) {
+        dragging = false;
+        viewport.classList.remove('is-panning');
+      }
+    });
+
+    /* Double-click to reset */
+    viewport.addEventListener('dblclick', function () {
+      scale = 1; tx = 0; ty = 0;
+      apply();
+    });
+
+    /* Keyboard zoom (+/-/0) and pan (arrow keys) */
+    viewport.setAttribute('tabindex', '0');
+    viewport.addEventListener('keydown', function (e) {
+      var cx = viewport.offsetWidth  / 2;
+      var cy = viewport.offsetHeight / 2;
+      switch (e.key) {
+        case '+': case '=':
+          e.preventDefault();
+          zoomAround(cx, cy, ZOOM_FACTOR);
+          break;
+        case '-':
+          e.preventDefault();
+          zoomAround(cx, cy, 1 / ZOOM_FACTOR);
+          break;
+        case '0':
+          e.preventDefault();
+          scale = 1; tx = 0; ty = 0; apply();
+          break;
+        case 'ArrowLeft':
+          e.preventDefault(); tx += KEY_PAN_STEP; apply(); break;
+        case 'ArrowRight':
+          e.preventDefault(); tx -= KEY_PAN_STEP; apply(); break;
+        case 'ArrowUp':
+          e.preventDefault(); ty += KEY_PAN_STEP; apply(); break;
+        case 'ArrowDown':
+          e.preventDefault(); ty -= KEY_PAN_STEP; apply(); break;
+      }
+    });
   })();
 </script>
 
